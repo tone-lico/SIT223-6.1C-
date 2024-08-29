@@ -1,66 +1,76 @@
-stage('Build') {
-    steps {
-        echo 'Building...'
-        sh 'mvn clean package'
-    }
-}
+pipeline {
+    agent any
 
-stage('Test') {
-    steps {
-        echo 'Running tests...'
-        sh 'mvn test'
-    }
-}
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+                // Replace with your build tool command, e.g., Maven
+                sh 'mvn clean package'
+            }
+        }
 
-stage('Code Analysis') {
-    steps {
-        echo 'Analyzing code...'
-        // Assuming SonarQube is configured
-        sh 'mvn sonar:sonar'
-    }
-}
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Running unit and integration tests...'
+                // Replace with your testing framework command
+                sh 'mvn test'
+            }
+        }
 
-stage('Security Scan') {
-    steps {
-        echo 'Running security scan...'
-        // Assuming OWASP Dependency Check is set up
-        sh 'dependency-check.sh --project MyProject'
-    }
-}
+        stage('Code Analysis') {
+            steps {
+                echo 'Analyzing code quality...'
+                // Assuming SonarQube is configured
+                sh 'mvn sonar:sonar'
+            }
+        }
 
-stage('Deploy to Staging') {
-    steps {
-        echo 'Deploying to Staging...'
-        // Example AWS CLI command
-        sh 'aws s3 cp target/myapp.jar s3://my-staging-bucket/'
-    }
-}
+        stage('Security Scan') {
+            steps {
+                echo 'Performing security scan...'
+                // Replace with the security scan tool command
+                sh 'dependency-check.sh --project MyProject'
+            }
+        }
 
-stage('Integration Tests on Staging') {
-    steps {
-        echo 'Running integration tests on staging...'
-        // Assuming Selenium tests are configured
-        sh 'mvn verify'
-    }
-}
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging environment...'
+                // Replace with your deployment command
+                sh 'aws s3 cp target/myapp.jar s3://my-staging-bucket/'
+            }
+        }
 
-stage('Deploy to Production') {
-    steps {
-        echo 'Deploying to Production...'
-        // Example AWS CLI command
-        sh 'aws s3 cp target/myapp.jar s3://my-production-bucket/'
-    }
-}
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging environment...'
+                // Replace with integration tests command for staging
+                sh 'mvn verify'
+            }
+        }
 
-post {
-    success {
-        mail to: 'youremail@example.com',
-             subject: "Pipeline successful: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-             body: "Pipeline '${env.JOB_NAME}' (${env.BUILD_URL}) succeeded."
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to production environment...'
+                // Replace with your deployment command
+                sh 'aws s3 cp target/myapp.jar s3://my-production-bucket/'
+            }
+        }
     }
-    failure {
-        mail to: 'youremail@example.com',
-             subject: "Pipeline failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-             body: "Pipeline '${env.JOB_NAME}' (${env.BUILD_URL}) failed."
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+            mail to: 'youremail@example.com',
+                 subject: "Pipeline Success: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "Good news! The pipeline '${env.JOB_NAME}' (${env.BUILD_URL}) has completed successfully."
+        }
+        failure {
+            echo 'Pipeline failed.'
+            mail to: 'youremail@example.com',
+                 subject: "Pipeline Failure: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                 body: "Unfortunately, the pipeline '${env.JOB_NAME}' (${env.BUILD_URL}) failed. Please check the logs."
+        }
     }
 }
