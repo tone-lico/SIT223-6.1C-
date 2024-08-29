@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Assuming this is a Java project using Maven
+                    sh 'mvn clean install'
+                }
+            }
+        }
+
+        stage('Unit and Integration Tests') {
+            steps {
+                script {
+                    // Run unit tests (e.g., JUnit)
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                script {
+                    // Assuming SonarQube is used for code analysis
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                script {
+                    // Assuming OWASP Dependency-Check is used for security scanning
+                    sh 'mvn org.owasp:dependency-check-maven:check'
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    // Deploy to staging environment (e.g., AWS EC2 instance)
+                    sh 'scp -i /path/to/key.pem target/yourapp.jar ec2-user@your-staging-instance:/path/to/deploy'
+                }
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                script {
+                    // Run integration tests on the staging environment
+                    sh 'ssh -i /path/to/key.pem ec2-user@your-staging-instance "cd /path/to/deploy && ./run-integration-tests.sh"'
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                script {
+                    // Deploy to production environment (e.g., AWS EC2 instance)
+                    sh 'scp -i /path/to/key.pem target/yourapp.jar ec2-user@your-production-instance:/path/to/deploy'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Archive the build artifacts (optional)
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            }
+        }
+
+        success {
+            script {
+                // Send email notification on success
+                emailext to: 'developer@example.com',
+                         subject: "Pipeline Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                         body: "The pipeline has completed successfully.",
+                         attachLog: true
+            }
+        }
+
+        failure {
+            script {
+                // Send email notification on failure
+                emailext to: 'developer@example.com',
+                         subject: "Pipeline Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                         body: "The pipeline has failed. Please check the logs.",
+                         attachLog: true
+            }
+        }
+    }
+}
