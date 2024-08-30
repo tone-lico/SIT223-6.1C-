@@ -21,12 +21,12 @@ pipeline {
             }
             post {
                 always {
+                    archiveArtifacts artifacts: '**/test-results/**/*.xml', allowEmptyArchive: true
                     script {
-                        def logContent = currentBuild.rawBuild.log.join('\n')
+                        def logContent = currentBuild.rawBuild.getLog(100).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Test Stage: ${currentBuild.currentResult}",
-                             body: """The test stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}""",
-                             attachLog: true
+                             body: "The test stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
                     }
                 }
             }
@@ -46,12 +46,12 @@ pipeline {
             }
             post {
                 always {
+                    archiveArtifacts artifacts: '**/security-reports/**/*.xml', allowEmptyArchive: true
                     script {
-                        def logContent = currentBuild.rawBuild.log.join('\n')
+                        def logContent = currentBuild.rawBuild.getLog(100).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Security Scan Stage: ${currentBuild.currentResult}",
-                             body: """The security scan stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}""",
-                             attachLog: true
+                             body: "The security scan stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
                     }
                 }
             }
@@ -77,7 +77,7 @@ pipeline {
                 // sh 'deploy to production script'
             }
         }
-    }a
+    }
 
     post {
         always {
