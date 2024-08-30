@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Define any necessary environment variables
         EMAIL_RECIPIENT = 'your-email@example.com'
     }
 
@@ -20,6 +19,18 @@ pipeline {
                 // Use a testing tool like JUnit or TestNG
                 // sh 'mvn test'
             }
+            post {
+                always {
+                    archiveArtifacts artifacts: '**/test-results/**/*.xml', allowEmptyArchive: true
+                    script {
+                        def testStatus = currentBuild.currentResult
+                        mail to: "${env.EMAIL_RECIPIENT}",
+                             subject: "Test Stage: ${testStatus}",
+                             body: "The test stage has completed with status: ${testStatus}.",
+                             attachLog: true
+                    }
+                }
+            }
         }
         stage('Code Analysis') {
             steps {
@@ -33,6 +44,18 @@ pipeline {
                 echo 'Performing Security Scan...'
                 // Use a security scanning tool like OWASP ZAP or Snyk
                 // sh 'snyk test'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: '**/security-reports/**/*.xml', allowEmptyArchive: true
+                    script {
+                        def securityStatus = currentBuild.currentResult
+                        mail to: "${env.EMAIL_RECIPIENT}",
+                             subject: "Security Scan Stage: ${securityStatus}",
+                             body: "The security scan stage has completed with status: ${securityStatus}.",
+                             attachLog: true
+                    }
+                }
             }
         }
         stage('Deploy to Staging') {
@@ -61,18 +84,6 @@ pipeline {
     post {
         always {
             echo 'Pipeline completed'
-        }
-
-        success {
-            mail to: "${env.EMAIL_RECIPIENT}",
-                 subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
-                 body: "The pipeline has completed successfully."
-        }
-
-        failure {
-            mail to: "${env.EMAIL_RECIPIENT}",
-                 subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
-                 body: "The pipeline has failed. Please check the logs for details."
         }
     }
 }
