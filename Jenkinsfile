@@ -5,16 +5,16 @@ pipeline {
         // Stage 1: Build
         stage('Build') {
             steps {
-                // Example for a Maven project
-                sh 'mvn clean package'
+                // Replace Unix `sh` command with Windows `bat` command
+                bat 'mvn clean package'
             }
         }
 
         // Stage 2: Unit and Integration Tests
         stage('Unit and Integration Tests') {
             steps {
-                // Run tests
-                sh 'mvn test'
+                // Run tests using Windows batch command
+                bat 'mvn test'
             }
             post {
                 always {
@@ -31,15 +31,15 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 // Example using SonarQube
-                sh 'sonar-scanner'
+                bat 'sonar-scanner'
             }
         }
 
         // Stage 4: Security Scan
         stage('Security Scan') {
             steps {
-                // Example using OWASP Dependency-Check
-                sh 'dependency-check.sh --project Jenkins --scan ./'
+                // Example using OWASP Dependency-Check (ensure the tool is installed and available in PATH)
+                bat 'dependency-check.bat --project Jenkins --scan ./'
             }
             post {
                 always {
@@ -55,24 +55,24 @@ pipeline {
         // Stage 5: Deploy to Staging
         stage('Deploy to Staging') {
             steps {
-                // Example using Ansible
-                sh 'ansible-playbook deploy-staging.yml'
+                // Use Ansible or another tool compatible with Windows
+                bat 'ansible-playbook deploy-staging.yml'
             }
         }
 
         // Stage 6: Integration Tests on Staging
         stage('Integration Tests on Staging') {
             steps {
-                // Example using Postman collection
-                sh 'newman run integration_tests.postman_collection.json'
+                // Example using Postman Newman, ensure it's installed
+                bat 'newman run integration_tests.postman_collection.json'
             }
         }
 
         // Stage 7: Deploy to Production
         stage('Deploy to Production') {
             steps {
-                // Example using AWS CLI
-                sh 'aws s3 cp build-output.zip s3://your-production-bucket/'
+                // Use AWS CLI for deployment (ensure AWS CLI is installed)
+                bat 'aws s3 cp build-output.zip s3://your-production-bucket/'
             }
         }
     } // End of stages
