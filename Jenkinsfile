@@ -1,80 +1,78 @@
 pipeline {
     agent any
 
+    environment {
+        // Define any necessary environment variables
+        EMAIL_RECIPIENT = 'your-email@example.com'
+    }
+
     stages {
-        // Stage 1: Build
         stage('Build') {
             steps {
-                // Replace Unix `sh` command with Windows `bat` command
-                bat 'gradle clean build'
+                echo 'Building...'
+                // Use a build tool like Maven or Gradle
+                // sh 'mvn clean package'
             }
         }
-
-        // Stage 2: Unit and Integration Tests
         stage('Unit and Integration Tests') {
             steps {
-                // Run tests using Windows batch command
-                bat 'gradle test'
-            }
-            post {
-                always {
-                    // Email notification after tests
-                    emailext subject: "Jenkins: Build #${env.BUILD_NUMBER} - Unit and Integration Tests",
-                             body: "Build #${env.BUILD_NUMBER} completed the Unit and Integration Tests stage. Check Jenkins for details.",
-                             to: 'developer@example.com',
-                             attachLog: true
-                }
+                echo 'Running Unit and Integration Tests...'
+                // Use a testing tool like JUnit or TestNG
+                // sh 'mvn test'
             }
         }
-
-        // Stage 3: Code Analysis
         stage('Code Analysis') {
             steps {
-                // Example using SonarQube
-                bat 'sonar-scanner'
+                echo 'Running Code Analysis...'
+                // Use a code analysis tool like SonarQube
+                // sh 'sonar-scanner'
             }
         }
-
-        // Stage 4: Security Scan
         stage('Security Scan') {
             steps {
-                // Example using OWASP Dependency-Check (ensure the tool is installed and available in PATH)
-                bat 'dependency-check.bat --project Jenkins --scan ./'
-            }
-            post {
-                always {
-                    // Email notification after the security scan
-                    emailext subject: "Jenkins: Build #${env.BUILD_NUMBER} - Security Scan",
-                             body: "Build #${env.BUILD_NUMBER} completed the Security Scan stage. Check Jenkins for details.",
-                             to: 'developer@example.com',
-                             attachLog: true
-                }
+                echo 'Performing Security Scan...'
+                // Use a security scanning tool like OWASP ZAP or Snyk
+                // sh 'snyk test'
             }
         }
-
-        // Stage 5: Deploy to Staging
         stage('Deploy to Staging') {
             steps {
-                // Use Ansible or another tool compatible with Windows
-                bat 'ansible-playbook deploy-staging.yml'
+                echo 'Deploying to Staging...'
+                // Deploy to staging server, e.g., AWS EC2
+                // sh 'deploy to staging script'
             }
         }
-
-        // Stage 6: Integration Tests on Staging
         stage('Integration Tests on Staging') {
             steps {
-                // Example using Postman Newman, ensure it's installed
-                bat 'newman run integration_tests.postman_collection.json'
+                echo 'Running Integration Tests on Staging...'
+                // Run integration tests on staging environment
+                // sh 'run staging tests script'
             }
         }
-
-        // Stage 7: Deploy to Production
         stage('Deploy to Production') {
             steps {
-                // Use AWS CLI for deployment (ensure AWS CLI is installed)
-                bat 'aws s3 cp build-output.zip s3://your-production-bucket/'
+                echo 'Deploying to Production...'
+                // Deploy to production server, e.g., AWS EC2
+                // sh 'deploy to production script'
             }
         }
-    } // End of stages
+    }
 
-} // End of pipeline
+    post {
+        always {
+            echo 'Pipeline completed'
+        }
+
+        success {
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
+                 body: "The pipeline has completed successfully."
+        }
+
+        failure {
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Pipeline Failed: ${currentBuild.fullDisplayName}",
+                 body: "The pipeline has failed. Please check the logs for details."
+        }
+    }
+}
