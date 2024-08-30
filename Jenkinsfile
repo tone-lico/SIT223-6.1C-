@@ -22,7 +22,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def logContent = manager.build.log(50).join('\n')
+                        def logContent = currentBuild.rawBuild.getLog(50).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Test Stage: ${currentBuild.currentResult}",
                              body: "The test stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
@@ -46,7 +46,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def logContent = manager.build.log(50).join('\n')
+                        def logContent = currentBuild.rawBuild.getLog(50).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Security Scan Stage: ${currentBuild.currentResult}",
                              body: "The security scan stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
