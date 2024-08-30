@@ -22,10 +22,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def logContent = ""
-                        def logFile = "test-stage-log.txt"
-                        archiveArtifacts artifacts: logFile, allowEmptyArchive: true
-                        logContent = readFile(logFile)
+                        def logContent = currentBuild.getLog(50).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Test Stage: ${currentBuild.currentResult}",
                              body: "The test stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
@@ -49,10 +46,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def logContent = ""
-                        def logFile = "security-scan-log.txt"
-                        archiveArtifacts artifacts: logFile, allowEmptyArchive: true
-                        logContent = readFile(logFile)
+                        def logContent = currentBuild.getLog(50).join('\n')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Security Scan Stage: ${currentBuild.currentResult}",
                              body: "The security scan stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}"
