@@ -1,87 +1,80 @@
 pipeline {
     agent any
-
-    environment {
-        EMAIL_RECIPIENT = 'testsnapetest@gmail.com'
-    }
-
+    
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
-                // Use a build tool like Maven or Gradle
-                // sh 'mvn clean package'
+                echo 'Building the code...'
+                // Use a build automation tool like Maven or Gradle
+                sh 'mvn clean package'
             }
         }
+        
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
-                // Use a testing tool like JUnit or TestNG
-                // sh 'mvn test'
-            }
-            post {
-                always {
-                    script {
-                        def logContent = currentBuild.rawBuild.log.join('\n')
-                        mail to: "${env.EMAIL_RECIPIENT}",
-                             subject: "Test Stage: ${currentBuild.currentResult}",
-                             body: """The test stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}""",
-                             attachLog: true
-                    }
-                }
+                // Specify testing tools like JUnit for unit tests and Postman/Newman for integration tests
+                sh 'mvn test'
             }
         }
+        
         stage('Code Analysis') {
             steps {
-                echo 'Running Code Analysis...'
-                // Use a code analysis tool like SonarQube
-                // sh 'sonar-scanner'
+                echo 'Performing Code Analysis...'
+                // Use a tool like SonarQube for code analysis
+                sh 'mvn sonar:sonar'
             }
         }
+        
         stage('Security Scan') {
             steps {
                 echo 'Performing Security Scan...'
                 // Use a security scanning tool like OWASP ZAP or Snyk
-                // sh 'snyk test'
-            }
-            post {
-                always {
-                    script {
-                        def logContent = currentBuild.rawBuild.log.join('\n')
-                        mail to: "${env.EMAIL_RECIPIENT}",
-                             subject: "Security Scan Stage: ${currentBuild.currentResult}",
-                             body: """The security scan stage has completed with status: ${currentBuild.currentResult}.\n\nLogs:\n${logContent}""",
-                             attachLog: true
-                    }
-                }
+                sh 'snyk test'
             }
         }
+        
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to Staging...'
-                // Deploy to staging server, e.g., AWS EC2
-                // sh 'deploy to staging script'
+                echo 'Deploying to Staging Environment...'
+                // Deploy the application to a staging server, e.g., AWS EC2
+                sh 'scp target/myapp.jar user@staging-server:/path/to/deploy/'
             }
         }
+        
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                // Run integration tests on staging environment
-                // sh 'run staging tests script'
+                // Re-run integration tests on the staging environment
+                sh 'curl -X GET http://staging-server/api/health'
             }
         }
+        
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to Production...'
-                // Deploy to production server, e.g., AWS EC2
-                // sh 'deploy to production script'
+                echo 'Deploying to Production Environment...'
+                // Deploy the application to the production server
+                sh 'scp target/myapp.jar user@production-server:/path/to/deploy/'
             }
         }
     }
-
+    
     post {
-        always {
-            echo 'Pipeline completed'
+        success {
+            echo 'Pipeline succeeded!'
+            emailext(
+                subject: "Jenkins Pipeline Success",
+                body: "The Jenkins pipeline has completed successfully.",
+                to: "testsnapetest@gmail.com"
+            )
+        }
+        failure {
+            echo 'Pipeline failed!'
+            emailext(
+                subject: "Jenkins Pipeline Failure",
+                body: "The Jenkins pipeline has failed.",
+                to: "testsnapetest@gmail.com"
+            )
         }
     }
 }
