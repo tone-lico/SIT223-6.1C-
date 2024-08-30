@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        EMAIL_RECIPIENT = 'your-email@example.com'
+        EMAIL_RECIPIENT = 'testsnapetest@gmail.com'
     }
 
     stages {
@@ -24,10 +24,10 @@ pipeline {
                     archiveArtifacts artifacts: '**/test-results/**/*.xml', allowEmptyArchive: true
                     script {
                         def testStatus = currentBuild.currentResult
+                        def logContent = readFile('path/to/logfile.log')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Test Stage: ${testStatus}",
-                             body: "The test stage has completed with status: ${testStatus}.",
-                             attachLog: true
+                             body: "The test stage has completed with status: ${testStatus}.\n\nLogs:\n${logContent}"
                     }
                 }
             }
@@ -50,10 +50,10 @@ pipeline {
                     archiveArtifacts artifacts: '**/security-reports/**/*.xml', allowEmptyArchive: true
                     script {
                         def securityStatus = currentBuild.currentResult
+                        def logContent = readFile('path/to/logfile.log')
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Security Scan Stage: ${securityStatus}",
-                             body: "The security scan stage has completed with status: ${securityStatus}.",
-                             attachLog: true
+                             body: "The security scan stage has completed with status: ${securityStatus}.\n\nLogs:\n${logContent}"
                     }
                 }
             }
