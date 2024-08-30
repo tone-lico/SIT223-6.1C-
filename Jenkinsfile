@@ -19,10 +19,10 @@ pipeline {
             post {
                 always {
                     // Email notification after tests
-                    mail to: 'developer@example.com',
-                         subject: "Jenkins: Build #${env.BUILD_NUMBER} - Unit and Integration Tests",
-                         body: "Build #${env.BUILD_NUMBER} completed the Unit and Integration Tests stage. Check Jenkins for details.",
-                         attachLog: true
+                    emailext subject: "Jenkins: Build #${env.BUILD_NUMBER} - Unit and Integration Tests",
+                             body: "Build #${env.BUILD_NUMBER} completed the Unit and Integration Tests stage. Check Jenkins for details.",
+                             to: 'developer@example.com',
+                             attachLog: true
                 }
             }
         }
@@ -44,10 +44,10 @@ pipeline {
             post {
                 always {
                     // Email notification after the security scan
-                    mail to: 'developer@example.com',
-                         subject: "Jenkins: Build #${env.BUILD_NUMBER} - Security Scan",
-                         body: "Build #${env.BUILD_NUMBER} completed the Security Scan stage. Check Jenkins for details.",
-                         attachLog: true
+                    emailext subject: "Jenkins: Build #${env.BUILD_NUMBER} - Security Scan",
+                             body: "Build #${env.BUILD_NUMBER} completed the Security Scan stage. Check Jenkins for details.",
+                             to: 'developer@example.com',
+                             attachLog: true
                 }
             }
         }
