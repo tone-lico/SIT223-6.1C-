@@ -6,7 +6,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Replace Unix `sh` command with Windows `bat` command
-                bat 'mvn clean package'
+                bat 'gradle clean build'
             }
         }
 
@@ -14,7 +14,7 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 // Run tests using Windows batch command
-                bat 'mvn test'
+                bat 'gradle test'
             }
             post {
                 always {
