@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     environment {
@@ -7,20 +6,27 @@ pipeline {
     }
 
     stages {
-
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Use a build tool like Maven or Gradle
-                sh 'mvn clean package'
+                echo 'Tools that can be used in this stage:'
+                echo '1. Maven: mvn clean package'
+                echo '2. Gradle: gradle build'
+                echo '3. npm: npm install'
+                // Uncomment to actually run a tool
+                // sh 'mvn clean package'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
-                // Use a testing tool like JUnit or TestNG
-                sh 'mvn test'
+                echo 'Tools that can be used in this stage:'
+                echo '1. JUnit: mvn test'
+                echo '2. TestNG: mvn test'
+                echo '3. Mocha/Chai (for Node.js): npm test'
+                // Uncomment to actually run a tool
+                // sh 'mvn test'
             }
             post {
                 always {
@@ -38,16 +44,24 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 echo 'Running Code Analysis...'
-                // Use a code analysis tool like SonarQube
-                sh 'sonar-scanner'
+                echo 'Tools that can be used in this stage:'
+                echo '1. SonarQube: sonar-scanner'
+                echo '2. ESLint (for JavaScript/Node.js): eslint .'
+                echo '3. Checkstyle (for Java): mvn checkstyle:check'
+                // Uncomment to actually run a tool
+                // sh 'sonar-scanner'
             }
         }
 
         stage('Security Scan') {
             steps {
                 echo 'Performing Security Scan...'
-                // Use a security scanning tool like OWASP ZAP or Snyk
-                sh 'snyk test'
+                echo 'Tools that can be used in this stage:'
+                echo '1. OWASP ZAP: zap-cli start'
+                echo '2. Snyk: snyk test'
+                echo '3. Dependency Check: dependency-check.sh --project MyProject'
+                // Uncomment to actually run a tool
+                // sh 'snyk test'
             }
             post {
                 always {
@@ -65,27 +79,38 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
-                // Deploy to staging server, e.g., AWS EC2
-                sh './deploy-to-staging.sh'
+                echo 'Tools that can be used in this stage:'
+                echo '1. AWS CLI: aws s3 cp target/myapp.jar s3://my-staging-bucket/'
+                echo '2. Kubernetes (for containerized apps): kubectl apply -f deployment.yaml'
+                echo '3. Ansible: ansible-playbook -i inventory deploy.yml'
+                // Uncomment to actually run a tool
+                // sh 'deploy to staging script'
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running Integration Tests on Staging...'
-                // Run integration tests on staging environment
-                sh './run-staging-tests.sh'
+                echo 'Tools that can be used in this stage:'
+                echo '1. Postman/Newman: newman run postman_collection.json'
+                echo '2. Selenium: mvn verify'
+                echo '3. Cypress (for frontend testing): cypress run'
+                // Uncomment to actually run a tool
+                // sh 'run staging tests script'
             }
         }
 
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying to Production...'
-                // Deploy to production server, e.g., AWS EC2
-                sh './deploy-to-production.sh'
+                echo 'Tools that can be used in this stage:'
+                echo '1. AWS CLI: aws s3 cp target/myapp.jar s3://my-production-bucket/'
+                echo '2. Kubernetes: kubectl apply -f production-deployment.yaml'
+                echo '3. Jenkins Deploy Plugin (for automated deployments): deploy target/myapp.jar'
+                // Uncomment to actually run a tool
+                // sh 'deploy to production script'
             }
         }
-
     }
 
     post {
