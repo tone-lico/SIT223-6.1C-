@@ -1,9 +1,11 @@
 pipeline {
     agent any
 
+
     environment {
         EMAIL_RECIPIENT = 'testsnapetest@gmail.com'
     }
+
 
     stages {
         stage('Build') {
@@ -13,10 +15,10 @@ pipeline {
                 echo '1. Maven: mvn clean package'
                 echo '2. Gradle: gradle build'
                 echo '3. npm: npm install'
-                // Uncomment to actually run a tool
                 // sh 'mvn clean package'
             }
         }
+
 
         stage('Unit and Integration Tests') {
             steps {
@@ -25,7 +27,6 @@ pipeline {
                 echo '1. JUnit: mvn test'
                 echo '2. TestNG: mvn test'
                 echo '3. Mocha/Chai (for Node.js): npm test'
-                // Uncomment to actually run a tool
                 // sh 'mvn test'
             }
             post {
@@ -41,6 +42,7 @@ pipeline {
             }
         }
 
+
         stage('Code Analysis') {
             steps {
                 echo 'Running Code Analysis...'
@@ -48,10 +50,10 @@ pipeline {
                 echo '1. SonarQube: sonar-scanner'
                 echo '2. ESLint (for JavaScript/Node.js): eslint .'
                 echo '3. Checkstyle (for Java): mvn checkstyle:check'
-                // Uncomment to actually run a tool
                 // sh 'sonar-scanner'
             }
         }
+
 
         stage('Security Scan') {
             steps {
@@ -60,7 +62,6 @@ pipeline {
                 echo '1. OWASP ZAP: zap-cli start'
                 echo '2. Snyk: snyk test'
                 echo '3. Dependency Check: dependency-check.sh --project MyProject'
-                // Uncomment to actually run a tool
                 // sh 'snyk test'
             }
             post {
@@ -76,6 +77,7 @@ pipeline {
             }
         }
 
+
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying to Staging...'
@@ -83,10 +85,10 @@ pipeline {
                 echo '1. AWS CLI: aws s3 cp target/myapp.jar s3://my-staging-bucket/'
                 echo '2. Kubernetes (for containerized apps): kubectl apply -f deployment.yaml'
                 echo '3. Ansible: ansible-playbook -i inventory deploy.yml'
-                // Uncomment to actually run a tool
                 // sh 'deploy to staging script'
             }
         }
+
 
         stage('Integration Tests on Staging') {
             steps {
@@ -95,10 +97,10 @@ pipeline {
                 echo '1. Postman/Newman: newman run postman_collection.json'
                 echo '2. Selenium: mvn verify'
                 echo '3. Cypress (for frontend testing): cypress run'
-                // Uncomment to actually run a tool
                 // sh 'run staging tests script'
             }
         }
+
 
         stage('Deploy to Production') {
             steps {
@@ -107,11 +109,11 @@ pipeline {
                 echo '1. AWS CLI: aws s3 cp target/myapp.jar s3://my-production-bucket/'
                 echo '2. Kubernetes: kubectl apply -f production-deployment.yaml'
                 echo '3. Jenkins Deploy Plugin (for automated deployments): deploy target/myapp.jar'
-                // Uncomment to actually run a tool
                 // sh 'deploy to production script'
             }
         }
     }
+
 
     post {
         always {
@@ -119,3 +121,6 @@ pipeline {
         }
     }
 }
+
+
+
